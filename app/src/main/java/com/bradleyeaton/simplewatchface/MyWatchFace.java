@@ -42,15 +42,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
      * Updates rate in milliseconds for interactive mode. We update once a second to advance the
      * second hand.
      */
-    private static final long INTERACTIVE_UPDATE_RATE_MS = 33;
-    private static final long HANDSAWAY_TIMER_MS = 5000;
-    private static final long HANDSAWAY_UPDATE_RATE_MS = 500;
+    private static final long ANALOG_UPDATE_RATE_MS = 33;
+    private static final long DIGITAL_UPDATE_RATE_MS = 1000;
 
     /**
      * Handler message id for updating the time periodically in interactive mode.
      */
     private static final int MSG_UPDATE_TIME = 0;
-    private static final int MSG_HANDSAWAY = 1;
 
     @Override
     public Engine onCreateEngine() {
@@ -71,9 +69,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 switch (msg.what) {
                     case MSG_UPDATE_TIME:
                         engine.handleUpdateTimeMessage(MSG_UPDATE_TIME);
-                        break;
-                    case MSG_HANDSAWAY:
-                        engine.handleUpdateTimeMessage(MSG_HANDSAWAY);
                         break;
                 }
             }
@@ -125,8 +120,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private int mSmallTickColor;
         private int mBigTickColor;
         private int mTextColor;
+        private int mBigTextColor;
         private Paint mTextPaint;
-        private boolean mHandsAway;
+        private Paint mBigTextPaint;
+        private ScreenEnum screenState;
         private String dateRep;
         private boolean isRegisteredBatteryInfo;
         private String batteryPercentStr = "?%";
@@ -152,7 +149,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     .build());
 
             mCalendar = Calendar.getInstance();
-            mHandsAway = false;
+            screenState = ScreenEnum.Analog;
 
             initializeBackground();
             initializeWatchFace();
@@ -188,6 +185,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mSmallTickColor = Color.GRAY;
             mBigTickColor = Color.WHITE;
             mTextColor = Color.GRAY;
+            mBigTextColor = Color.WHITE;
 
             mHourPaint = new Paint();
             mHourPaint.setColor(mWatchHandColor);
@@ -229,6 +227,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mTextPaint.setAntiAlias(true);
             mTextPaint.setTextAlign(Paint.Align.CENTER);
             mTextPaint.setTextSize(18);
+
+            mBigTextPaint = new Paint();
+            mBigTextPaint.setColor(mBigTextColor);
+            mBigTextPaint.setAntiAlias(true);
+            mBigTextPaint.setTextAlign(Paint.Align.CENTER);
+            mBigTextPaint.setTextSize(40);
         }
 
         @Override
@@ -255,10 +259,28 @@ public class MyWatchFace extends CanvasWatchFaceService {
             super.onAmbientModeChanged(inAmbientMode);
             mAmbient = inAmbientMode;
 
+            if(mAmbient){
+                exitDetailedMode();
+            }
+
             updateWatchHandStyle();
 
             /* Check and trigger whether or not timer should be running (only in active mode). */
             updateTimer();
+        }
+
+        private void exitDetailedMode(){
+            switch (screenState){
+                case DigitalDetails:
+                    screenState = ScreenEnum.Digital;
+                    invalidate();
+                    break;
+                case AnalogDetails:
+                    screenState = ScreenEnum.Analog;
+                    invalidate();
+                    break;
+
+            }
         }
 
         private void updateWatchHandStyle() {
@@ -277,6 +299,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 mBigTickPaint.setAntiAlias(false);
                 mTextPaint.setAntiAlias(false);
                 mTextPaint.setTextSize(18);
+                mBigTextPaint.setAntiAlias(false);
 
                 mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, Color.WHITE);
 
@@ -287,7 +310,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 //                mSmallTickAndCirclePaint.clearShadowLayer();
 //                mBigTickPaint.clearShadowLayer();
 
-            } else if(mHandsAway){
+            } else if(screenState == ScreenEnum.AnalogDetails || screenState == ScreenEnum.DigitalDetails){
                 mHourPaint.setColor(Color.TRANSPARENT);
                 mMinutePaint.setColor(Color.TRANSPARENT);
                 mSecondPaint.setColor(Color.TRANSPARENT);
@@ -316,6 +339,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 mSmallTickAndCirclePaint.setAntiAlias(true);
                 mBigTickPaint.setAntiAlias(true);
                 mTextPaint.setAntiAlias(true);
+                mBigTextPaint.setAntiAlias(true);
                 mTextPaint.setTextSize(18);
 
 //                mHourPaint.setShadowLayer(SHADOW_RADIUS, 0, 0, mWatchHandShadowColor);
@@ -418,12 +442,19 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     break;
                 case TAP_TYPE_TAP:
                     // The user has completed the tap gesture.
-                    mHandsAway = true;
+                    nextScreen();
                     updateWatchHandStyle();
                     invalidate();
                     break;
             }
             invalidate();
+        }
+
+        /**
+         * Set the watchface to next screen
+         */
+        private void nextScreen(){
+            screenState = ScreenEnum.nextScreen(screenState);
         }
 
         @Override
@@ -449,28 +480,32 @@ public class MyWatchFace extends CanvasWatchFaceService {
              * Draw ticks. Usually you will want to bake this directly into the photo, but in
              * cases where you want to allow users to select their own photos, this dynamically
              * creates them on top of the photo.
+             *
+             * Only do this for analog
              */
-            float innerTickRadiusLarge = mCenterX - 30;
-            float innerTickRadiusSmall = mCenterX - 10;
-            float outerTickRadius = mCenterX;
+            if(screenState != ScreenEnum.Digital) {
+                float innerTickRadiusLarge = mCenterX - 30;
+                float innerTickRadiusSmall = mCenterX - 10;
+                float outerTickRadius = mCenterX;
 
-            float innerX, innerY;
-            Paint currentPaint;
-            for (int tickIndex = 0; tickIndex < 60; tickIndex++) {
-                float tickRot = (float) (tickIndex * Math.PI * 2 / 60);
-                if(tickIndex % 5 == 0) {
-                    currentPaint = mBigTickPaint;
-                    innerX = (float) Math.sin(tickRot) * innerTickRadiusLarge;
-                    innerY = (float) -Math.cos(tickRot) * innerTickRadiusLarge;
-                } else {
-                    currentPaint = mSmallTickAndCirclePaint;
-                    innerX = (float) Math.sin(tickRot) * innerTickRadiusSmall;
-                    innerY = (float) -Math.cos(tickRot) * innerTickRadiusSmall;
+                float innerX, innerY;
+                Paint currentPaint;
+                for (int tickIndex = 0; tickIndex < 60; tickIndex++) {
+                    float tickRot = (float) (tickIndex * Math.PI * 2 / 60);
+                    if (tickIndex % 5 == 0) {
+                        currentPaint = mBigTickPaint;
+                        innerX = (float) Math.sin(tickRot) * innerTickRadiusLarge;
+                        innerY = (float) -Math.cos(tickRot) * innerTickRadiusLarge;
+                    } else {
+                        currentPaint = mSmallTickAndCirclePaint;
+                        innerX = (float) Math.sin(tickRot) * innerTickRadiusSmall;
+                        innerY = (float) -Math.cos(tickRot) * innerTickRadiusSmall;
+                    }
+                    float outerX = (float) Math.sin(tickRot) * outerTickRadius;
+                    float outerY = (float) -Math.cos(tickRot) * outerTickRadius;
+                    canvas.drawLine(mCenterX + innerX, mCenterY + innerY,
+                            mCenterX + outerX, mCenterY + outerY, currentPaint);
                 }
-                float outerX = (float) Math.sin(tickRot) * outerTickRadius;
-                float outerY = (float) -Math.cos(tickRot) * outerTickRadius;
-                canvas.drawLine(mCenterX + innerX, mCenterY + innerY,
-                        mCenterX + outerX, mCenterY + outerY, currentPaint);
             }
 
 
@@ -485,55 +520,81 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private void drawWatchFace(Canvas canvas) {
             canvas.save();
 
-            int hours = mCalendar.get(Calendar.HOUR);
+            int hours = mCalendar.get(Calendar.HOUR_OF_DAY); //24hr
             int minutes = mCalendar.get(Calendar.MINUTE);
             int seconds = mCalendar.get(Calendar.SECOND);
-            int milliseconds = mCalendar.get(Calendar.MILLISECOND);
 
-            //hours rotation
-            final float hourHandOffset = minutes / 2f;
-            final float hoursRotation = (hours * 30) + hourHandOffset;
+            if(screenState == ScreenEnum.Analog) {
+                int hours12hr = hours % 12;
+                int milliseconds = mCalendar.get(Calendar.MILLISECOND);
 
-            final float secondHandOffset = seconds * 0.1f;
-            final float minutesRotation = minutes * 6f + secondHandOffset;
-            final float secondsRotation =
-                    (seconds + (milliseconds / 1000f)) * 6f;
+                //hours rotation
+                final float hourHandOffset = minutes / 2f;
+                final float hoursRotation = (hours12hr * 30) + hourHandOffset;
 
-            //draw hours
-            canvas.rotate(hoursRotation, mCenterX, mCenterY);
-            canvas.drawLine(
-                    mCenterX,
-                    mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,
-                    mCenterX,
-                    mCenterY - sHourHandLength,
-                    mHourPaint);
+                final float secondHandOffset = seconds * 0.1f;
+                final float minutesRotation = minutes * 6f + secondHandOffset;
+                final float secondsRotation =
+                        (seconds + (milliseconds / 1000f)) * 6f;
 
-            //draw minutes
-            canvas.rotate(minutesRotation - hoursRotation, mCenterX, mCenterY);
-            canvas.drawLine(
-                    mCenterX,
-                    mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,
-                    mCenterX,
-                    mCenterY - sMinuteHandLength,
-                    mMinutePaint);
-
-
-            //draw seconds
-            if(!mAmbient) {
-                canvas.rotate(secondsRotation - minutesRotation, mCenterX, mCenterY);
+                //draw hours
+                canvas.rotate(hoursRotation, mCenterX, mCenterY);
                 canvas.drawLine(
                         mCenterX,
                         mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,
                         mCenterX,
-                        mCenterY - mSecondHandLength,
-                        mSecondPaint);
-            }
+                        mCenterY - sHourHandLength,
+                        mHourPaint);
 
-            canvas.drawCircle(
-                    mCenterX,
-                    mCenterY,
-                    CENTER_GAP_AND_CIRCLE_RADIUS,
-                    mSmallTickAndCirclePaint);
+                //draw minutes
+                canvas.rotate(minutesRotation - hoursRotation, mCenterX, mCenterY);
+                canvas.drawLine(
+                        mCenterX,
+                        mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,
+                        mCenterX,
+                        mCenterY - sMinuteHandLength,
+                        mMinutePaint);
+
+
+                //draw seconds
+                if (!mAmbient) {
+                    canvas.rotate(secondsRotation - minutesRotation, mCenterX, mCenterY);
+                    canvas.drawLine(
+                            mCenterX,
+                            mCenterY - CENTER_GAP_AND_CIRCLE_RADIUS,
+                            mCenterX,
+                            mCenterY - mSecondHandLength,
+                            mSecondPaint);
+                }
+
+                canvas.drawCircle(
+                        mCenterX,
+                        mCenterY,
+                        CENTER_GAP_AND_CIRCLE_RADIUS,
+                        mSmallTickAndCirclePaint);
+            } else if(screenState == ScreenEnum.Digital) {
+                //Digital
+
+
+                float timeX = mCenterX;
+                float timeY = mCenterY;
+                StringBuilder sb = new StringBuilder();
+                if(hours < 10){
+                    sb.append(0);
+                }
+                sb.append(hours).append(":");
+                if(minutes < 10){
+                    sb.append(0);
+                }
+                sb.append(minutes);
+                if(!mAmbient){
+                    if(seconds < 10){
+                        sb.append(0);
+                    }
+                    sb.append(":").append(seconds);
+                }
+                canvas.drawText(sb.toString(), timeX, timeY, mBigTextPaint);
+            }
 
             canvas.restore();
 
@@ -551,10 +612,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
             float batteryTextY = mCenterY - (0.5f * mCenterY);
             canvas.drawText(batteryPercentStr, batteryTextX, batteryTextY, mTextPaint);
 
-            //draw battery circle
-            float radius = 40;
-            RectF oval = new RectF();
-            oval.set(mCenterX, mCenterY - radius, mCenterX);
+//            //draw battery circle
+//            float radius = 40;
+//            RectF oval = new RectF();
+//            oval.set(mCenterX, mCenterY - radius, mCenterX);
         }
 
         @Override
@@ -626,21 +687,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
          */
         private void handleUpdateTimeMessage(int MSG_IN) {
             invalidate();
-            if(mHandsAway && MSG_IN == MSG_HANDSAWAY){
-                mHandsAway = false;
-                updateWatchHandStyle();
-            }
             if (shouldTimerBeRunning()) {
                 long timeMs = System.currentTimeMillis();
-                long delayMs;
-                if(mHandsAway){
-                    delayMs = HANDSAWAY_UPDATE_RATE_MS - (timeMs % HANDSAWAY_UPDATE_RATE_MS);
-                    long timerLength = HANDSAWAY_TIMER_MS;
-                    mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_HANDSAWAY, timerLength);
-                } else {
-                    delayMs = INTERACTIVE_UPDATE_RATE_MS
-                            - (timeMs % INTERACTIVE_UPDATE_RATE_MS);
-                }
+                long updateRateMS = screenState == ScreenEnum.Analog 
+                        ? ANALOG_UPDATE_RATE_MS
+                        : DIGITAL_UPDATE_RATE_MS; //the update rate is dependant on whether analog watchface shown
+                long delayMs = updateRateMS
+                            - (timeMs % updateRateMS);
                 mUpdateTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, delayMs);
             }
         }
