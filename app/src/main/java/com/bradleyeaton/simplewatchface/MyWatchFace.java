@@ -5,10 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.*;
-import android.os.BatteryManager;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import androidx.annotation.Nullable;
 import androidx.palette.graphics.Palette;
 import android.support.wearable.watchface.CanvasWatchFaceService;
@@ -42,7 +39,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
      * Updates rate in milliseconds for interactive mode. We update once a second to advance the
      * second hand.
      */
-    private static final long ANALOG_UPDATE_RATE_MS = 33;
+    private static final long ANALOG_UPDATE_RATE_MS = 50;
     private static final long DIGITAL_UPDATE_RATE_MS = 1000;
 
     /**
@@ -59,6 +56,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private final WeakReference<MyWatchFace.Engine> mWeakReference;
 
         public EngineHandler(MyWatchFace.Engine reference) {
+            super(Looper.getMainLooper());
             mWeakReference = new WeakReference<>(reference);
         }
 
