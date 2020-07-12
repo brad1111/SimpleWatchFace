@@ -1,4 +1,5 @@
 #SimpleWatchFace
+
 A combination analog and digital watchface with an emphasis on saving battery life.
 
 Both analog and digital watchfaces include the date and battery life percentage of the watch.
