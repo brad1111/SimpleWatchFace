@@ -125,12 +125,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private Paint mBigTextPaint;
         private ScreenEnum screenState;
         private String dateRep;
-        private boolean isRegisteredBatteryInfo;
+        private boolean isRegisteredBatteryInfo = false;
         private String batteryPercentStr = "?%";
         private int batteryPercent = 100;
 
         //Battery manager
-        private BroadcastReceiver mBatteryInfo = new BroadcastReceiver() {
+        private final BroadcastReceiver mBatteryInfo = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 int level = intent.getIntExtra("level", 0);
@@ -316,7 +316,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 mSecondPaint.setColor(Color.TRANSPARENT);
                 mSmallTickAndCirclePaint.setColor(Color.GRAY);
                 mBigTickPaint.setColor(Color.GRAY);
-                mTextPaint.setColor(Color.WHITE);
 
                 mHourPaint.setAntiAlias(false);
                 mMinutePaint.setAntiAlias(false);
@@ -353,7 +352,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private void updateDate(){
             int day = mCalendar.get(Calendar.DAY_OF_MONTH);
             String month = mCalendar.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH);
-            dateRep = new StringBuilder().append(day).append(" ").append(month).toString();
+            dateRep = new StringBuilder().append(day).append(" ").append(month).toString(); //stringbuilder used for performance
         }
 
         @Override
@@ -483,7 +482,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
              *
              * Only do this for analog
              */
-            if(screenState != ScreenEnum.Digital) {
+            if(screenState == ScreenEnum.Analog || screenState == ScreenEnum.AnalogDetails) {
                 float innerTickRadiusLarge = mCenterX - 30;
                 float innerTickRadiusSmall = mCenterX - 10;
                 float outerTickRadius = mCenterX;
@@ -572,7 +571,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                         mCenterY,
                         CENTER_GAP_AND_CIRCLE_RADIUS,
                         mSmallTickAndCirclePaint);
-            } else if(screenState == ScreenEnum.Digital) {
+            } else if(screenState == ScreenEnum.Digital || screenState == ScreenEnum.DigitalDetails) {
                 //Digital
 
 
@@ -588,10 +587,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 }
                 sb.append(minutes);
                 if(!mAmbient){
+                    sb.append(":");
                     if(seconds < 10){
                         sb.append(0);
                     }
-                    sb.append(":").append(seconds);
+                    sb.append(seconds);
                 }
                 canvas.drawText(sb.toString(), timeX, timeY, mBigTextPaint);
             }
@@ -659,7 +659,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }
 
             if(isRegisteredBatteryInfo){
-                isRegisteredBatteryInfo = true;
+                isRegisteredBatteryInfo = false;
                 MyWatchFace.this.unregisterReceiver(mBatteryInfo);
             }
         }
