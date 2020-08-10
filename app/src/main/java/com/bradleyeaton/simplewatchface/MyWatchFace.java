@@ -6,20 +6,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.*;
 import android.os.*;
-import androidx.annotation.Nullable;
-import androidx.palette.graphics.Palette;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Analog watch face with a ticking second hand. In ambient mode, the second hand isn't
@@ -121,7 +116,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private int mBigTextColor;
         private Paint mTextPaint;
         private Paint mBigTextPaint;
-        private ScreenEnum screenState;
+        private int screenState; //based on AnalogScreenEnum
         private String dateRep;
         private boolean isRegisteredBatteryInfo = false;
         private String batteryPercentStr = "?%";
@@ -147,7 +142,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     .build());
 
             mCalendar = Calendar.getInstance();
-            screenState = ScreenEnum.Analog;
+            screenState = AnalogScreenEnum.ANALOG;
 
             initializeBackground();
             initializeWatchFace();
@@ -269,12 +264,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         private void exitDetailedMode(){
             switch (screenState){
-                case DigitalDetails:
-                    screenState = ScreenEnum.Digital;
+                case AnalogScreenEnum.DIGITAL_DETAILS:
+                    screenState = AnalogScreenEnum.DIGITAL;
                     invalidate();
                     break;
-                case AnalogDetails:
-                    screenState = ScreenEnum.Analog;
+                case AnalogScreenEnum.ANALOG_DETAILS:
+                    screenState = AnalogScreenEnum.ANALOG;
                     invalidate();
                     break;
 
@@ -308,7 +303,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 //                mSmallTickAndCirclePaint.clearShadowLayer();
 //                mBigTickPaint.clearShadowLayer();
 
-            } else if(screenState == ScreenEnum.AnalogDetails || screenState == ScreenEnum.DigitalDetails){
+            } else if(screenState == AnalogScreenEnum.ANALOG_DETAILS || screenState == AnalogScreenEnum.DIGITAL_DETAILS){
                 mHourPaint.setColor(Color.TRANSPARENT);
                 mMinutePaint.setColor(Color.TRANSPARENT);
                 mSecondPaint.setColor(Color.TRANSPARENT);
@@ -451,7 +446,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
          * Set the watchface to next screen
          */
         private void nextScreen(){
-            screenState = ScreenEnum.nextScreen(screenState);
+            screenState = AnalogScreenEnum.nextScreen(screenState);
         }
 
         @Override
@@ -480,7 +475,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
              *
              * Only do this for analog
              */
-            if(screenState == ScreenEnum.Analog || screenState == ScreenEnum.AnalogDetails) {
+            if(screenState == AnalogScreenEnum.ANALOG || screenState == AnalogScreenEnum.ANALOG_DETAILS) {
                 float innerTickRadiusLarge = mCenterX - 30;
                 float innerTickRadiusSmall = mCenterX - 10;
                 float outerTickRadius = mCenterX;
@@ -521,7 +516,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             int minutes = mCalendar.get(Calendar.MINUTE);
             int seconds = mCalendar.get(Calendar.SECOND);
 
-            if(screenState == ScreenEnum.Analog) {
+            if(screenState == AnalogScreenEnum.ANALOG) {
                 int hours12hr = hours % 12;
                 int milliseconds = mCalendar.get(Calendar.MILLISECOND);
 
@@ -569,7 +564,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                         mCenterY,
                         CENTER_GAP_AND_CIRCLE_RADIUS,
                         mSmallTickAndCirclePaint);
-            } else if(screenState == ScreenEnum.Digital || screenState == ScreenEnum.DigitalDetails) {
+            } else if(screenState == AnalogScreenEnum.DIGITAL || screenState == AnalogScreenEnum.DIGITAL_DETAILS) {
                 //Digital
 
 
@@ -687,7 +682,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             invalidate();
             if (shouldTimerBeRunning()) {
                 long timeMs = System.currentTimeMillis();
-                long updateRateMS = screenState == ScreenEnum.Analog 
+                long updateRateMS = screenState == AnalogScreenEnum.ANALOG
                         ? ANALOG_UPDATE_RATE_MS
                         : DIGITAL_UPDATE_RATE_MS; //the update rate is dependant on whether analog watchface shown
                 long delayMs = updateRateMS
