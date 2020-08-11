@@ -60,5 +60,6 @@ public class ConfigActivity extends WearableActivity {
         int b = mPickerBlue.getValue();
         int color = Color.argb(255, r, g, b);
         preferences.setSecondColorRGB(color);
+        preferences.setUpdated();
     }
 }

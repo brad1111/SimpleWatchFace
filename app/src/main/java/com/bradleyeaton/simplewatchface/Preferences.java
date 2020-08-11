@@ -18,9 +18,7 @@ public class Preferences {
      * @param color the color of the second hand
      */
     public void setSecondColorRGB(int color){
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(SECOND_COLOR, color);
-        editor.apply();
+        sharedPref.edit().putInt(SECOND_COLOR, color).apply();
     }
     /**
      * Gets the color of the second hand
@@ -28,5 +26,27 @@ public class Preferences {
      */
     public int getSecondColor(){
         return sharedPref.getInt(SECOND_COLOR, Color.RED);
+    }
+
+    private static final String UPDATED = "UPDATED";
+
+    /**
+     * Gets whether the preferences have been updated since last check
+     * @return
+     */
+    public boolean getUpdated(){
+        boolean value = sharedPref.getBoolean(UPDATED,false);
+        if(value) {
+            //We've received the update
+            sharedPref.edit().putBoolean(UPDATED, false).apply();
+        }
+        return value;
+    }
+
+    /**
+     * Notify that preferences have been updated
+     */
+    public void setUpdated(){
+        sharedPref.edit().putBoolean(UPDATED, true).apply();
     }
 }
