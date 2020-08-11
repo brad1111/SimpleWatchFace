@@ -142,12 +142,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mCalendar = Calendar.getInstance();
             screenState = AnalogScreenEnum.ANALOG;
 
-            initializeBackground();
-            initializeWatchFace();
-
             //setup shared preferences
             SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("A",MODE_PRIVATE);
+            preferences = new Preferences(sharedPref);
 
+            initializeBackground();
+            initializeWatchFace();
         }
 
         private void initializeBackground() {
@@ -172,7 +172,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private void initializeWatchFace() {
             /* Set defaults for colors */
             mWatchHandColor = Color.WHITE;
-            mWatchHandHighlightColor = Color.RED;
+            mWatchHandHighlightColor = preferences.getSecondColor();
 //            mWatchHandShadowColor = Color.BLACK;
             mSmallTickColor = Color.GRAY;
             mBigTickColor = Color.WHITE;

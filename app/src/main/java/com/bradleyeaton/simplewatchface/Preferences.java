@@ -23,10 +23,10 @@ public class Preferences {
         editor.apply();
     }
     /**
-     * Gets red component of second hand (default color red)
+     * Gets the color of the second hand
      * @return
      */
-    public int getSecondColorR(){
+    public int getSecondColor(){
         return sharedPref.getInt(SECOND_COLOR, Color.RED);
     }
 }
