@@ -1,9 +1,6 @@
 package com.bradleyeaton.simplewatchface;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.support.wearable.watchface.CanvasWatchFaceService;
@@ -121,6 +118,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private boolean isRegisteredBatteryInfo = false;
         private String batteryPercentStr = "?%";
         private int batteryPercent = 100;
+        private Preferences preferences;
 
         //Battery manager
         private final BroadcastReceiver mBatteryInfo = new BroadcastReceiver() {
@@ -147,7 +145,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
             initializeBackground();
             initializeWatchFace();
 
-            //setup battery
+            //setup shared preferences
+            SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("A",MODE_PRIVATE);
 
         }
 
