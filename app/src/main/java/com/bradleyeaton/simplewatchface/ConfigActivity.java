@@ -10,6 +10,9 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.wear.widget.WearableLinearLayoutManager;
+import androidx.wear.widget.WearableRecyclerView;
 import org.jraf.android.androidwearcolorpicker.ColorPickActivity;
 import org.jraf.android.androidwearcolorpicker.R.id.*;
 
@@ -24,6 +27,7 @@ public class ConfigActivity extends WearableActivity {
 //    private NumberPicker mPickerBlue;
 
 //    private Button mButtonSave;
+    private WearableRecyclerView mWearableRecyclerView;
 
     private static final int REQUEST_PICK_COLOR = 202;
 
@@ -31,6 +35,20 @@ public class ConfigActivity extends WearableActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
+
+        //temp create a list of items
+        String[] items = new String[100];
+        for (int i = 0; i < 100; i++) {
+            items[i] = Integer.toString(i);
+        }
+
+
+        mWearableRecyclerView = findViewById(R.id.wearableRecyclerView);
+        mWearableRecyclerView.setEdgeItemsCenteringEnabled(true);
+        RecyclerView.LayoutManager layoutManager = new WearableLinearLayoutManager(this);
+        mWearableRecyclerView.setLayoutManager(layoutManager);
+        ListAdapter listAdapter = new ListAdapter(items);
+        mWearableRecyclerView.setAdapter(listAdapter);
 
         //        mTextView = (TextView) findViewById(R.id.text);
 
