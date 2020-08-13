@@ -1,4 +1,4 @@
-package com.bradleyeaton.simplewatchface;
+package com.bradleyeaton.simplewatchface.config;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -6,15 +6,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
-import android.widget.Button;
-import android.widget.NumberPicker;
-import android.widget.TextView;
-import android.widget.Toast;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.wear.widget.WearableLinearLayoutManager;
 import androidx.wear.widget.WearableRecyclerView;
+import com.bradleyeaton.simplewatchface.R;
 import org.jraf.android.androidwearcolorpicker.ColorPickActivity;
-import org.jraf.android.androidwearcolorpicker.R.id.*;
+
+import java.util.Random;
 
 public class ConfigActivity extends WearableActivity {
 
@@ -37,9 +35,16 @@ public class ConfigActivity extends WearableActivity {
         setContentView(R.layout.activity_config);
 
         //temp create a list of items
-        String[] items = new String[100];
+        Random rng = new Random();
+        ListItem[] items = new ListItem[100];
         for (int i = 0; i < 100; i++) {
-            items[i] = Integer.toString(i);
+            int imageType = i % 2 == 0
+                    ? ImageTypeEnum.COLOR
+                    : ImageTypeEnum.BOOLEAN;
+            //set random colour
+
+            int color = Color.argb(255, rng.nextInt(256),rng.nextInt(256),rng.nextInt(256));
+            items[i] = new ListItem(this, "Item " + i , imageType, color);
         }
 
 

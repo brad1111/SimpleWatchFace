@@ -7,6 +7,7 @@ import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
+import com.bradleyeaton.simplewatchface.config.Preferences;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;

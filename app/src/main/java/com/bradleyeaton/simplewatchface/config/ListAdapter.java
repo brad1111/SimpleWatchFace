@@ -1,30 +1,31 @@
-package com.bradleyeaton.simplewatchface;
+package com.bradleyeaton.simplewatchface.config;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.wear.widget.WearableRecyclerView;
+import com.bradleyeaton.simplewatchface.R;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.logging.Logger;
-
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
-    private String[] dataSet;
+    private ListItem[] dataSet;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView textView;
+        public ImageView listImageView;
+
         public ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.list_text_view);
+            listImageView = itemView.findViewById(R.id.list_image_view);
         }
     }
 
-    public ListAdapter(String[] dataSet) {
+    public ListAdapter(ListItem[] dataSet) {
         this.dataSet = dataSet;
     }
 
@@ -37,7 +38,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
-        holder.textView.setText(dataSet[position]);
+        holder.textView.setText(dataSet[position].getLabel());
+        holder.listImageView.setBackground(dataSet[position].getBackground());
+        holder.listImageView.setForeground(dataSet[position].getForeground());
     }
 
     @Override

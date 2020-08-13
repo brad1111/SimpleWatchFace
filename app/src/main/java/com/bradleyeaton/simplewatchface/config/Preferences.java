@@ -1,4 +1,4 @@
-package com.bradleyeaton.simplewatchface;
+package com.bradleyeaton.simplewatchface.config;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;

@@ -27,7 +27,7 @@
                 android:value="true"/>
 
         <activity
-                android:name=".ConfigActivity"
+                android:name=".config.ConfigActivity"
                 android:label="@string/title_activity_config">
             <intent-filter>
                 <action android:name="com.bradleyeaton.simplewatchface.ConfigActivity"/>
