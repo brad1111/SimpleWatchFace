@@ -36,8 +36,8 @@ public class ConfigActivity extends WearableActivity {
 
         //temp create a list of items
         Random rng = new Random();
-        ListItem[] items = new ListItem[100];
-        for (int i = 0; i < 100; i++) {
+        ListItem[] items = new ListItem[1000];
+        for (int i = 0; i < 1000; i++) {
             int imageType = i % 2 == 0
                     ? ImageTypeEnum.COLOR
                     : ImageTypeEnum.BOOLEAN;
@@ -111,5 +111,12 @@ public class ConfigActivity extends WearableActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        preferences = null;
+        mWearableRecyclerView = null;
     }
 }
