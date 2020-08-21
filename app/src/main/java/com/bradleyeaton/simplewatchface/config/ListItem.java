@@ -45,10 +45,10 @@ public class ListItem {
                 foregroundUnscaled = ResourcesCompat.getDrawable(res, R.drawable.ic_cc_clear, context.getTheme());
                 break;
         }
-        final int FOREGROUND_DIAMETER = 24; //24px
+        final int FOREGROUND_DIAMETER = 140; //24px
 
-        this.foreground = new ScaleDrawable(foregroundUnscaled, 0, 0.1f, 0.5f).getDrawable();
-//        this.foreground.setBounds(0,0,FOREGROUND_DIAMETER,FOREGROUND_DIAMETER);
+        this.foreground = new ScaleDrawable(foregroundUnscaled, 0, FOREGROUND_DIAMETER, FOREGROUND_DIAMETER).getDrawable();
+        this.foreground.setBounds(0,0,FOREGROUND_DIAMETER,FOREGROUND_DIAMETER);
         this.background = ResourcesCompat.getDrawable(res, R.drawable.circle, context.getTheme()).mutate();
         this.background.setTintList(ColorStateList.valueOf(tintColor));
     }
