@@ -144,7 +144,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             screenState = AnalogScreenEnum.ANALOG;
 
             //setup shared preferences
-            SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("A",MODE_PRIVATE);
+            SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.preference_file_key),MODE_PRIVATE);
             preferences = new Preferences(sharedPref);
 
             initializeBackground();
