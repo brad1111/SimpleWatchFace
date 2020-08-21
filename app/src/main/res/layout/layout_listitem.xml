@@ -24,12 +24,13 @@
 <!--    </vector>-->
     <ImageView
             android:id="@+id/list_image_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"/>
-    <!--            android:src="@drawable/ic_round_color_lens_24"-->
-    <!--            android:background="@drawable/circle"-->
-    <!--            android:backgroundTint="@color/dark_blue"-->
+            android:layout_width="44dp"
+            android:layout_height="44dp"/>
+    <!--android:padding="10dp"
+                android:src="@drawable/ic_round_color_lens_24"
+                android:background="@drawable/circle"
+                android:backgroundTint="@color/dark_blue"-->
+
 
     <TextView
             android:id="@+id/list_text_view"

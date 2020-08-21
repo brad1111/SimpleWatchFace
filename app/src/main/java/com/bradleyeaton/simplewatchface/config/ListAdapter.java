@@ -16,12 +16,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView textView;
-        public ImageView listImageView;
+        public ImageView imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textView = itemView.findViewById(R.id.list_text_view);
-            listImageView = itemView.findViewById(R.id.list_image_view);
+            imageView = itemView.findViewById(R.id.list_image_view);
         }
     }
 
@@ -39,8 +39,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         holder.textView.setText(dataSet[position].getLabel());
-        holder.listImageView.setBackground(dataSet[position].getBackground());
-        holder.listImageView.setForeground(dataSet[position].getForeground());
+        holder.imageView.setBackground(dataSet[position].getBackground());
+        holder.imageView.setForeground(dataSet[position].getForeground());
     }
 
     @Override

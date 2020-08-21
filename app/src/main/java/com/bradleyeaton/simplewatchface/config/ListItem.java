@@ -7,6 +7,7 @@ import android.content.res.XmlResourceParser;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
 import android.widget.ImageView;
 import androidx.core.content.res.ResourcesCompat;
 import com.bradleyeaton.simplewatchface.R;
@@ -32,19 +33,24 @@ public class ListItem {
     public ListItem(Context context, String label, int imageType, int tintColor) {
         this.label = label;
         Resources res = context.getResources();
+        Drawable foregroundUnscaled;
         switch (imageType){
             case ImageTypeEnum.COLOR:
-                this.foreground = ResourcesCompat.getDrawable(res, R.drawable.ic_round_color_lens_24, context.getTheme());
+                foregroundUnscaled = ResourcesCompat.getDrawable(res, R.drawable.ic_round_color_lens_24, context.getTheme());
                 break;
             case ImageTypeEnum.BOOLEAN:
-                this.foreground = ResourcesCompat.getDrawable(res, R.drawable.ic_cc_checkmark, context.getTheme());
+                foregroundUnscaled = ResourcesCompat.getDrawable(res, R.drawable.ic_cc_checkmark, context.getTheme());
                 break;
             default:
-                this.foreground = ResourcesCompat.getDrawable(res, R.drawable.ic_cc_clear, context.getTheme());
+                foregroundUnscaled = ResourcesCompat.getDrawable(res, R.drawable.ic_cc_clear, context.getTheme());
                 break;
         }
-        this.background = ResourcesCompat.getDrawable(res, R.drawable.circle, context.getTheme());
-        background.setTintList(ColorStateList.valueOf(tintColor));
+        final int FOREGROUND_DIAMETER = 24; //24px
+
+        this.foreground = new ScaleDrawable(foregroundUnscaled, 0, 0.1f, 0.5f).getDrawable();
+//        this.foreground.setBounds(0,0,FOREGROUND_DIAMETER,FOREGROUND_DIAMETER);
+        this.background = ResourcesCompat.getDrawable(res, R.drawable.circle, context.getTheme()).mutate();
+        this.background.setTintList(ColorStateList.valueOf(tintColor));
     }
 
     public String getLabel() {
