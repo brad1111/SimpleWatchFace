@@ -1,6 +1,7 @@
 package com.bradleyeaton.simplewatchface.config;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
@@ -22,6 +23,8 @@ public class ListItem {
     private String label;
     private Drawable foreground;
     private Drawable background;
+    private Intent intent;
+    private int requestCode;
 
 
     /**
@@ -29,9 +32,13 @@ public class ListItem {
      * @param label Label of button
      * @param imageType ImageTypeEnum for type of Image to use
      * @param tintColor the color of the tint for the background
+     * @param intent the action to do on click
+     * @param requestCode requestCode for intent
      */
-    public ListItem(Context context, String label, int imageType, int tintColor) {
+    public ListItem(Context context, String label, int imageType, int tintColor, Intent intent, int requestCode) {
         this.label = label;
+        this.intent = intent;
+        this.requestCode = requestCode;
         Resources res = context.getResources();
         Drawable foregroundUnscaled;
         switch (imageType){
@@ -63,5 +70,13 @@ public class ListItem {
 
     public Drawable getForeground() {
         return foreground;
+    }
+
+    public Intent getIntent() {
+        return intent;
+    }
+
+    public int getRequestCode() {
+        return requestCode;
     }
 }

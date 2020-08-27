@@ -26,6 +26,10 @@ public class ConfigActivity extends WearableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_config);
 
+        //setup preferences
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
+        preferences = new Preferences(sharedPref);
+
         //temp create a list of items
         Random rng = new Random();
         ListItem[] items = new ListItem[1000];
@@ -36,7 +40,7 @@ public class ConfigActivity extends WearableActivity {
             //set random colour
 
             int color = Color.argb(255, rng.nextInt(256),rng.nextInt(256),rng.nextInt(256));
-            items[i] = new ListItem(this, "Item " + i , imageType, color);
+            items[i] = new ListItem(this, "Item " + i , imageType, color, getBtnSecondsHandColorIntent(), REQUEST_PICK_COLOR);
         }
 
 
@@ -46,23 +50,29 @@ public class ConfigActivity extends WearableActivity {
         RecyclerView.LayoutManager layoutManager = new WearableLinearLayoutManager(this);
         mWearableRecyclerView.setLayoutManager(layoutManager);
         ListAdapter listAdapter = new ListAdapter(items);
+        listAdapter.onBind = (viewHolder, position) -> {
+            viewHolder.listItem.setOnClickListener(view -> {
+                startActivityForResult(getBtnSecondsHandColorIntent(), items[position].getRequestCode());
+            });
+        };
         mWearableRecyclerView.setAdapter(listAdapter);
-
-
-        //setup preferences
-        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
-        preferences = new Preferences(sharedPref);
 
         // Enables Always-on
         setAmbientEnabled();
     }
 
-    public void onBtnSecondsHandColor(View view){
-        //show color picker
-        Intent intent = new ColorPickActivity.IntentBuilder()
-                            .oldColor(preferences.getSecondColor())
-                            .build(this);
-        startActivityForResult(intent, REQUEST_PICK_COLOR);
+//    public void onBtnSecondsHandColor(View view){
+//        //show color picker
+//        Intent intent = new ColorPickActivity.IntentBuilder()
+//                            .oldColor(preferences.getSecondColor())
+//                            .build(this);
+//        startActivityForResult(intent, REQUEST_PICK_COLOR);
+//    }
+
+    public Intent getBtnSecondsHandColorIntent(){
+        return new ColorPickActivity.IntentBuilder()
+                .oldColor(preferences.getSecondColor())
+                .build(this);
     }
 
     @Override

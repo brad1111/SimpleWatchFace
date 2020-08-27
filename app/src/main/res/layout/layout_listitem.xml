@@ -2,6 +2,7 @@
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/config_list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/inner_frame_layout_padding"
@@ -38,6 +39,11 @@
                 android:src="@drawable/ic_round_color_lens_24"
                 android:background="@drawable/circle"
                 android:backgroundTint="@color/dark_blue"-->
+<!--        <Switch-->
+<!--                android:id="@+id/list_switch"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"/>-->
     </FrameLayout>
 
 
