@@ -11,22 +11,22 @@ public class Preferences {
         this.sharedPref = sharedPref;
     }
 
-    private static final String SECOND_COLOR = "SECOND_COLOR";
+    public static final int SECOND_COLOR = 932;
 
-    /**
-     * Sets the second hand color
-     * @param color the color of the second hand
-     */
-    public void setSecondColorRGB(int color){
-        sharedPref.edit().putInt(SECOND_COLOR, color).apply();
-    }
-    /**
-     * Gets the color of the second hand
-     * @return
-     */
-    public int getSecondColor(){
-        return sharedPref.getInt(SECOND_COLOR, Color.RED);
-    }
+//    /**
+//     * Sets the second hand color
+//     * @param color the color of the second hand
+//     */
+//    public void setSecondColorRGB(int color){
+//        sharedPref.edit().putInt(SECOND_COLOR, color).apply();
+//    }
+//    /**
+//     * Gets the color of the second hand
+//     * @return
+//     */
+//    public int getSecondColor(){
+//        return sharedPref.getInt(SECOND_COLOR, Color.RED);
+//    }
 
     private static final String UPDATED = "UPDATED";
 
@@ -48,5 +48,23 @@ public class Preferences {
      */
     public void setUpdated(){
         sharedPref.edit().putBoolean(UPDATED, true).apply();
+    }
+
+    public int getColorPreference(int preferenceName){
+        //Switch for default colors
+        int defaultColor;
+        switch (preferenceName){
+            case SECOND_COLOR:
+                defaultColor = Color.RED;
+                break;
+            default:
+                defaultColor = Color.BLACK;
+                break;
+        }
+        return sharedPref.getInt(Integer.toString(preferenceName), defaultColor);
+    }
+
+    public void setColorPreference(int preferenceName, int color){
+        sharedPref.edit().putInt(Integer.toString(preferenceName), color).apply();
     }
 }

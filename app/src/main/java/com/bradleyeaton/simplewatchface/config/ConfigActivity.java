@@ -12,14 +12,14 @@ import androidx.wear.widget.WearableRecyclerView;
 import com.bradleyeaton.simplewatchface.R;
 import org.jraf.android.androidwearcolorpicker.ColorPickActivity;
 
+import java.util.HashMap;
 import java.util.Random;
 
 public class ConfigActivity extends WearableActivity {
 
     private Preferences preferences;
     private WearableRecyclerView mWearableRecyclerView;
-
-    private static final int REQUEST_PICK_COLOR = 202;
+    private HashMap<Integer, ListItem> preferenceMatcher = new HashMap<>(); //matches preference constant to a listItem
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +32,16 @@ public class ConfigActivity extends WearableActivity {
 
         //temp create a list of items
         Random rng = new Random();
-        ListItem[] items = new ListItem[1000];
-        for (int i = 0; i < 1000; i++) {
+        ListItem[] items = new ListItem[20];
+        for (int i = 0; i < 20; i++) {
             int imageType = i % 2 == 0
                     ? ImageTypeEnum.COLOR
                     : ImageTypeEnum.BOOLEAN;
             //set random colour
 
-            int color = Color.argb(255, rng.nextInt(256),rng.nextInt(256),rng.nextInt(256));
-            items[i] = new ListItem(this, "Item " + i , imageType, color, getBtnSecondsHandColorIntent(), REQUEST_PICK_COLOR);
+            int color = preferences.getColorPreference(Preferences.SECOND_COLOR);
+            items[i] = new ListItem(this, "Item " + i , imageType, color, getBtnSecondsHandColorIntent(), Preferences.SECOND_COLOR);
+            preferenceMatcher.put(Preferences.SECOND_COLOR, items[i]);
         }
 
 
@@ -71,7 +72,7 @@ public class ConfigActivity extends WearableActivity {
 
     public Intent getBtnSecondsHandColorIntent(){
         return new ColorPickActivity.IntentBuilder()
-                .oldColor(preferences.getSecondColor())
+                .oldColor(preferences.getColorPreference(Preferences.SECOND_COLOR))
                 .build(this);
     }
 
@@ -79,11 +80,13 @@ public class ConfigActivity extends WearableActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
-            case REQUEST_PICK_COLOR:
+            case Preferences.SECOND_COLOR:
                 if(resultCode == RESULT_OK){
                     int color = ColorPickActivity.Companion.getPickedColor(data);
-                    preferences.setSecondColorRGB(color);
+                    preferences.setColorPreference(requestCode, color);
                     preferences.setUpdated();
+                    preferenceMatcher.containsKey(requestCode);
+                    preferenceMatcher.get(requestCode).setBackgroundColor(color);
                 }
                 break;
         }
@@ -94,5 +97,6 @@ public class ConfigActivity extends WearableActivity {
         super.onDestroy();
         preferences = null;
         mWearableRecyclerView = null;
+        preferenceMatcher = null;
     }
 }

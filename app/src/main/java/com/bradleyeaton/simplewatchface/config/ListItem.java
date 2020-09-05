@@ -25,6 +25,7 @@ public class ListItem {
     private Drawable background;
     private Intent intent;
     private int requestCode;
+    private int tintColor;
 
 
     /**
@@ -58,6 +59,7 @@ public class ListItem {
         this.foreground.setBounds(0,0,FOREGROUND_DIAMETER,FOREGROUND_DIAMETER);
         this.background = ResourcesCompat.getDrawable(res, R.drawable.circle, context.getTheme()).mutate();
         this.background.setTintList(ColorStateList.valueOf(tintColor));
+        setBackgroundColor(tintColor);
     }
 
     public String getLabel() {
@@ -74,6 +76,15 @@ public class ListItem {
 
     public Intent getIntent() {
         return intent;
+    }
+
+    public int getBackgroundColor(){
+        return tintColor;
+    }
+
+    public void setBackgroundColor(int tintColor){
+        this.tintColor = tintColor;
+        background.setTintList(ColorStateList.valueOf(tintColor));
     }
 
     public int getRequestCode() {

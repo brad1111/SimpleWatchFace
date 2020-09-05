@@ -173,7 +173,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private void initializeWatchFace() {
             /* Set defaults for colors */
             mWatchHandColor = Color.WHITE;
-            mWatchHandHighlightColor = preferences.getSecondColor();
+            mWatchHandHighlightColor = preferences.getColorPreference(Preferences.SECOND_COLOR);
 //            mWatchHandShadowColor = Color.BLACK;
             mSmallTickColor = Color.GRAY;
             mBigTickColor = Color.WHITE;
