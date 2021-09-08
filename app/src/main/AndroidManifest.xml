@@ -28,7 +28,8 @@
 
         <activity
                 android:name=".config.ConfigActivity"
-                android:label="@string/title_activity_config">
+                android:label="@string/title_activity_config"
+                android:exported="true">
             <intent-filter>
                 <action android:name="com.bradleyeaton.simplewatchface.ConfigActivity"/>
                 <category android:name="com.google.android.wearable.watchface.category.WEARABLE_CONFIGURATION"/>
@@ -39,7 +40,8 @@
         <service
                 android:name=".MyWatchFace"
                 android:label="@string/my_analog_name"
-                android:permission="android.permission.BIND_WALLPAPER">
+                android:permission="android.permission.BIND_WALLPAPER"
+                android:exported="true">
             <meta-data
                     android:name="android.service.wallpaper"
                     android:resource="@xml/watch_face"/>

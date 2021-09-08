@@ -1,5 +1,6 @@
 package com.bradleyeaton.simplewatchface.config;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.view.View;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.wear.ambient.AmbientModeSupport;
 import androidx.wear.widget.WearableLinearLayoutManager;
 import androidx.wear.widget.WearableRecyclerView;
 import com.bradleyeaton.simplewatchface.R;
@@ -15,7 +17,7 @@ import org.jraf.android.androidwearcolorpicker.ColorPickActivity;
 import java.util.HashMap;
 import java.util.Random;
 
-public class ConfigActivity extends WearableActivity {
+public class ConfigActivity extends Activity {
 
     private Preferences preferences;
     private WearableRecyclerView mWearableRecyclerView;
@@ -59,7 +61,7 @@ public class ConfigActivity extends WearableActivity {
         mWearableRecyclerView.setAdapter(listAdapter);
 
         // Enables Always-on
-        setAmbientEnabled();
+//        setAmbientEnabled();
     }
 
 //    public void onBtnSecondsHandColor(View view){
