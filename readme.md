@@ -1,4 +1,5 @@
 # SimpleWatchFace
+NOTE: This is no longer being updated since I no longer use Wear OS
 
 A combination analog and digital watchface with an emphasis on saving battery life.
 
